@@ -13,7 +13,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-# Инициализация веб-драйвера
 driver = webdriver.Chrome()
 
 
@@ -39,7 +38,7 @@ def maximize_and_navigate(full_url):
     :param full_url: Путь до страницы
     """
     driver.maximize_window()
-    driver.get(full_url)  # Переход на указанную страницу
+    driver.get(full_url)
 
 
 def switch_to_new_tab(tab_index):
@@ -101,30 +100,29 @@ def wait_for_element(timeout, by, locator):
 
 
 try:
-    maximize_and_navigate(f'https://{Selectors.STAND_PROD}{Selectors.URL_SBISRU}')  # Переход на СБИС.РУ
-    wait_for_element(10, By.CSS_SELECTOR, Selectors.BUTTON_CONTACT)  # Ожидание появления кнопки Контакты
+    maximize_and_navigate(f'https://{Selectors.STAND_PROD}{Selectors.URL_SBISRU}')
+    wait_for_element(10, By.CSS_SELECTOR, Selectors.BUTTON_CONTACT)
 
-    find_and_click_element(By.CSS_SELECTOR, Selectors.BUTTON_CONTACT)  # Переход на страницу "Контакты"
-    wait_for_element(10, By.CSS_SELECTOR, Selectors.BANNER_LINK)  # Ожидание появления баннера
+    find_and_click_element(By.CSS_SELECTOR, Selectors.BUTTON_CONTACT)
+    wait_for_element(10, By.CSS_SELECTOR, Selectors.BANNER_LINK)
 
-    find_and_click_element(By.CSS_SELECTOR, Selectors.BANNER_LINK)  # Переход по баннеру "Тензор"
+    find_and_click_element(By.CSS_SELECTOR, Selectors.BANNER_LINK)
 
-    switch_to_new_tab(1)  # Акцент на таб в браузере
+    switch_to_new_tab(1)
     action_chains = ActionChains(driver)
-    action_chains.move_to_element(driver.find_element(By.CSS_SELECTOR, Selectors.BLOCK_NEWS))  # Окрол до объекта
+    action_chains.move_to_element(driver.find_element(By.CSS_SELECTOR, Selectors.BLOCK_NEWS))
     action_chains.perform()
-    wait_for_element(10, By.CSS_SELECTOR, Selectors.NEWS_POWER)  # Ожидание появления Новости "Сила в людях"
+    wait_for_element(10, By.CSS_SELECTOR, Selectors.NEWS_POWER)
 
     new_power = driver.find_element(By.CSS_SELECTOR, Selectors.NEWS_POWER)
-    assert new_power.text == f"{Texts.BLOCK_TEXT_POWER_IN_PEOPLE}", f"Текст не соответствует ожидаемому'"  # Проверка блока
-    wait_for_element(10, By.CSS_SELECTOR, Selectors.ABOUT_LINK)  # Ожидание появления кнопки Подробнее
+    assert new_power.text == f"{Texts.BLOCK_TEXT_POWER_IN_PEOPLE}", f"Текст не соответствует ожидаемому'"
+    wait_for_element(10, By.CSS_SELECTOR, Selectors.ABOUT_LINK)
 
-    find_and_click_element(By.CSS_SELECTOR, Selectors.ABOUT_LINK)  # Переход на страницу tensor.ru/about
-    wait_for_element(10, By.CSS_SELECTOR, Selectors.ABOUT_COMPANY)  # Ожидание появления кнопки Подробнее
+    find_and_click_element(By.CSS_SELECTOR, Selectors.ABOUT_LINK)
+    wait_for_element(10, By.CSS_SELECTOR, Selectors.ABOUT_COMPANY)
 
-    assert driver.current_url == "https://tensor.ru/about", "URL не соответствует ожидаемому"  # Проверка URL
+    assert driver.current_url == "https://tensor.ru/about", "URL не соответствует ожидаемому"
 
-    print("Тест успешно пройден")
 
 finally:
-    driver.quit()  # Закрытие браузера
+    driver.quit()

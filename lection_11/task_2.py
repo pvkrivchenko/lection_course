@@ -1,3 +1,10 @@
+# Авторизоваться на сайте https://fix-online.sbis.ru/
+# Перейти в реестр Контакты
+# Отправить сообщение самому себе
+# Убедиться, что сообщение появилось в реестре
+# Удалить это сообщение и убедиться, что удалили
+# Для сдачи задания пришлите код и запись с экрана прохождения теста
+
 import time
 
 from selenium import webdriver
@@ -8,17 +15,25 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-LOGIN = "melartkon1"
-PASSWORD = "melartkon11"
-MESSAGE_TEXT = "Тестовое сообщение"
 
-ADD_BUTTON = '[data-qa="sabyPage-addButton"]'
-INPUT_FORM_MSG = '[data-qa="textEditor_slate_Field"]'
-SEND_MSG = '[data-qa="msg-send-editor__send-button"]'
-DIALOG_ITEM = '.msg-dialogs-item'
-DELETE_MSG = '.controls-Menu__content[title="Удалить"]'
-BUTTON_DELETE_YES = '[data-qa="controls-ConfirmationDialog__button-true"]'
-BUTTON_DELETE_OK = '//*[normalize-space(text())="ОК"]'
+class Texts:
+    LOGIN = "melartkon1"
+    PASSWORD = "melartkon11"
+    MESSAGE_TEXT = "Тестовое сообщение"
+
+
+class Selectors:
+    ADD_BUTTON = '[data-qa="sabyPage-addButton"]'
+    INPUT_FORM_MSG = '[data-qa="textEditor_slate_Field"]'
+    SEND_MSG = '[data-qa="msg-send-editor__send-button"]'
+    DIALOG_ITEM = '.msg-dialogs-item'
+    DELETE_MSG = '.controls-Menu__content[title="Удалить"]'
+    BUTTON_DELETE_YES = '[data-qa="controls-ConfirmationDialog__button-true"]'
+    BUTTON_DELETE_OK = '//*[normalize-space(text())="ОК"]'
+    MESSAGE_CONTENT = '.msg-entity-layout__message-content'
+    LOGIN_FIELD = '[data-qa="auth-AdaptiveLoginForm__login"] .controls-Field'
+    PASSWORD_FIELD = '[data-qa="auth-AdaptiveLoginForm__password"] .controls-Field'
+
 
 options = Options()
 options.add_experimental_option(
@@ -30,18 +45,39 @@ driver.maximize_window()
 
 
 def wait_for(selector, timeout=15):
+    """
+    Ждет, пока элемент появится на странице.
+
+    :param selector: CSS-селектор элемента (например, ".my-class" или "#my-id").
+    :param timeout: сколько секунд ждать (по умолчанию 15).
+    """
     return WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
     )
 
 
 def wait_clickable(selector, timeout=15):
+    """
+    Ждет, пока по элементу можно будет кликнуть.
+
+    Просто ждать появления мало, элемент может быть скрыт или перекрыт
+    другими элементами. Эта функция ждет, пока он станет полностью
+    доступным для клика.
+
+    :param selector: CSS-селектор элемента.
+    :param timeout: сколько секунд ждать (по умолчанию 15).
+    """
     return WebDriverWait(driver, timeout).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
     )
 
 
 def visible_messages(text):
+    """
+    Ищет на странице все видимые элементы, в которых есть нужный текст.
+
+    :param text: текст, который мы ищем (или его часть).
+    """
     elements = driver.find_elements(By.XPATH, f'//*[contains(text(), "{text}")]')
     return [
         el for el in elements
@@ -49,70 +85,45 @@ def visible_messages(text):
     ]
 
 
-def dispatch_contextmenu(element):
-    driver.execute_script("""
-        const el = arguments[0];
-        const rect = el.getBoundingClientRect();
-        el.dispatchEvent(new MouseEvent('contextmenu', {
-            bubbles: true, cancelable: true, view: window,
-            button: 2, buttons: 2,
-            clientX: rect.left + rect.width / 2,
-            clientY: rect.top + rect.height / 2
-        }));
-    """, element)
-
-
 try:
-    driver.get("https://fix-online.sbis.ru/")
-    time.sleep(2)
+    driver.get("https://fix-online.sbis.ru/page/people")
+    # time.sleep(2)
 
-    login_field = wait_for('[data-qa="auth-AdaptiveLoginForm__login"] .controls-Field')
-    login_field.send_keys(LOGIN)
+    login_field = wait_for(Selectors.LOGIN_FIELD)
+    login_field.send_keys(Texts.LOGIN)
     login_field.send_keys(Keys.ENTER)
 
-    password_field = wait_for('[data-qa="auth-AdaptiveLoginForm__password"] .controls-Field')
-    password_field.send_keys(PASSWORD)
+    password_field = wait_for(Selectors.PASSWORD_FIELD)
+    password_field.send_keys(Texts.PASSWORD)
     password_field.send_keys(Keys.ENTER)
-    time.sleep(3)
+    # time.sleep(3)
 
-    driver.get("https://fix-online.sbis.ru/page/people")
-    time.sleep(3)
+    # driver.get("https://fix-online.sbis.ru/page/people")
+    # time.sleep(3)
 
-    add_button = wait_clickable(ADD_BUTTON, timeout=20)
+    add_button = wait_clickable(Selectors.ADD_BUTTON)
     add_button.click()
     time.sleep(3)
-    print("Создаём новый чат")
 
-    input_field = wait_clickable(INPUT_FORM_MSG, timeout=20)
+    input_field = wait_clickable(Selectors.INPUT_FORM_MSG)
     input_field.click()
-    input_field.send_keys(MESSAGE_TEXT)
+    input_field.send_keys(Texts.MESSAGE_TEXT)
     time.sleep(1)
-    print(f'Сообщение: "{MESSAGE_TEXT}" - написано')
 
-    send_button = wait_clickable(SEND_MSG)
+    send_button = wait_clickable(Selectors.SEND_MSG)
     send_button.click()
-    time.sleep(4)
-    print(f'Сообщение: "{MESSAGE_TEXT}" - отправлено')
+    time.sleep(1)
 
-    if not visible_messages(MESSAGE_TEXT):
-        raise Exception(f"Сообщение '{MESSAGE_TEXT}' не найдено в чате")
-    print(f'Сообщение: "{MESSAGE_TEXT}" - отображается в чате')
+    if not visible_messages(Texts.MESSAGE_TEXT):
+        raise Exception(f"Сообщение '{Texts.MESSAGE_TEXT}' не найдено в чате")
 
-    driver.get("https://fix-online.sbis.ru/page/people")
     time.sleep(3)
 
-    dialogs = driver.find_elements(By.CSS_SELECTOR, DIALOG_ITEM)
+    dialogs = driver.find_elements(By.CSS_SELECTOR, Selectors.DIALOG_ITEM)
     if not dialogs:
         raise Exception("Список диалогов пуст")
 
-    dialogs[-1].click()
-    time.sleep(3)
-    wait_clickable(INPUT_FORM_MSG, timeout=20)
-    print("Провалились в последний диалог")
-
-    # Переиспользуем локатор на содержимое сообщения
-    MESSAGE_CONTENT = '.msg-entity-layout__message-content'
-    message_elements = driver.find_elements(By.CSS_SELECTOR, MESSAGE_CONTENT)
+    message_elements = driver.find_elements(By.CSS_SELECTOR, Selectors.MESSAGE_CONTENT)
     if not message_elements:
         raise Exception("Сообщения в диалоге не найдены")
 
@@ -122,38 +133,30 @@ try:
     )
     time.sleep(1)
 
-    # Клик правой кнопкой по последнему сообщению
     ActionChains(driver).context_click(last_message).perform()
     time.sleep(2)
 
-    # Клик на "Удалить"
-    delete_item = wait_clickable(DELETE_MSG)
+    delete_item = wait_clickable(Selectors.DELETE_MSG)
     delete_item.click()
     time.sleep(2)
 
-    # Подтверждаем удаление
-    confirm_button = wait_clickable(BUTTON_DELETE_YES)
+    confirm_button = wait_clickable(Selectors.BUTTON_DELETE_YES)
     confirm_button.click()
     time.sleep(3)
 
-    # Нажимаем "ОК" в финальном диалоге
     try:
         ok_button = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH, BUTTON_DELETE_OK))
+            EC.element_to_be_clickable((By.XPATH, Selectors.BUTTON_DELETE_OK))
         )
         ok_button.click()
         time.sleep(2)
     except Exception:
         pass
 
-    print(f'Сообщение: "{MESSAGE_TEXT}" - удалено')
-
     time.sleep(2)
-    if visible_messages(MESSAGE_TEXT):
-        raise Exception(f'Сообщение "{MESSAGE_TEXT}" всё ещё в чате')
-    print(f'Сообщение: "{MESSAGE_TEXT}" - больше не отображается')
+    if visible_messages(Texts.MESSAGE_TEXT):
+        raise Exception(f'Сообщение "{Texts.MESSAGE_TEXT}" всё ещё в чате')
 
-    print("ТЕСТ УСПЕШНО ПРОЙДЕН")
 
 finally:
     time.sleep(2)
