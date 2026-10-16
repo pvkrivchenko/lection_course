@@ -1,0 +1,11 @@
+[GENERAL]
+BROWSER = "chrome"
+SITE = "https://fix-online.saby.ru"
+SITES = [ "https://fix-online.saby.ru/auth/",]
+ELEMENT_OUTPUT_LOG = "user_friendly"
+DO_NOT_RESTART = true
+SOFT_RESTART = false
+
+[CREDENTIALS]
+USER_NAME = "melartkon1"
+PASSWORD = "melartkon11"
