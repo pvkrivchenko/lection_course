@@ -1,0 +1,19 @@
+[GENERAL]
+BROWSER = "chrome"
+SITE = "https://fix-online.saby.ru"
+SITES = [ "https://fix-online.saby.ru/auth/",]
+ELEMENT_OUTPUT_LOG = "user_friendly"
+HIGHLIGHT_ACTION = true
+DO_NOT_RESTART = true
+SOFT_RESTART = false
+
+[CUSTOM]
+MSG = 'Перенеси это сообщение в другую папку'
+MY_FOLDER = 'Папка для перемещения'
+MY_TAG = 'Эталонный тег'
+ALL_MESSAGES = 'Все'
+
+[CREDENTIALS]
+USER_NAME = "melartkon1"
+PASSWORD = "melartkon11"
+
